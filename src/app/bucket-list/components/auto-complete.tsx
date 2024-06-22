@@ -1,17 +1,14 @@
-import React, { useEffect, useState, useCallback, FormEvent } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { Input } from '../../../../@/components/ui/input';
-
+import { Command, CommandGroup, CommandItem, CommandList, CommandInput } from '@/components/ui/command';
+import debounce from '@visit-it/app/lib/utils/use-debounce';
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
 }
 
-// This is a custom built autocomplete component using the "Autocomplete Service" for predictions
-// and the "Places Service" for place details
 export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
   const map = useMap();
   const places = useMapsLibrary('places');
-
   // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompleteSessionToken
   const [sessionToken, setSessionToken] =
     useState<google.maps.places.AutocompleteSessionToken>();
@@ -41,24 +38,22 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
   }, [map, places]);
 
   const fetchPredictions = useCallback(
-    async (inputValue: string) => {
+    debounce(async (inputValue: string) => {
       if (!autocompleteService || !inputValue) {
         setPredictionResults([]);
         return;
       }
 
-      const request = { input: inputValue, sessionToken };
+      const request = { input: inputValue.trim(), sessionToken };
       const response = await autocompleteService.getPlacePredictions(request);
 
       setPredictionResults(response.predictions);
-    },
+    }, 900),
     [autocompleteService, sessionToken]
   );
 
   const onInputChange = useCallback(
-    (event: FormEvent<HTMLInputElement>) => {
-      const value = (event.target as HTMLInputElement)?.value;
-
+    (value: string) => {
       setInputValue(value);
       fetchPredictions(value);
     },
@@ -82,6 +77,7 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
         setPredictionResults([]);
         setInputValue(placeDetails?.formatted_address ?? '');
         setSessionToken(new places.AutocompleteSessionToken());
+        setInputValue('');
       };
 
       placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
@@ -90,27 +86,34 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
   );
 
   return (
-    <div className="w-full p-10">
-      <Input
-        value={inputValue} className="w-full"
-        onInput={(event: FormEvent<HTMLInputElement>) => onInputChange(event)}
-        placeholder="Search for a place"
-      />
+    <div className="w-full">
+      <Command className="rounded-lg border shadow-md">
+        <CommandInput placeholder="Search For a Place..."
+          value={inputValue}
+          onValueChange={onInputChange}
+        />
 
-      {predictionResults.length > 0 && (
-        <ul className="custom-list">
-          {predictionResults.map(({ place_id, description }) => {
-            return (
-              <li
-                key={place_id}
-                className="custom-list-item"
-                onClick={() => handleSuggestionClick(place_id)}>
-                {description}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+        {predictionResults.length > 0 && (
+          <CommandList>
+            <CommandGroup>
+              {predictionResults.map(({ place_id, description }) => {
+                return (
+                  <CommandItem
+                    key={place_id}
+                    className=""
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }}
+                    onSelect={() => handleSuggestionClick(place_id)}>
+                    {description}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        )}
+      </Command>
     </div>
   );
 };
