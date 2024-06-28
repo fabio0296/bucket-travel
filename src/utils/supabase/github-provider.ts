@@ -3,7 +3,10 @@ import { createClient } from "./client";
 export async function SignInWithGithub(){
   const client = createClient();
   const {data, error } =  await client.auth.signInWithOAuth({
-    provider: 'github'
+    provider: 'github',
+    options: {
+      redirectTo: 'http://localhost:3000/auth/callback'
+    }
   });
   console.log(`Data: ${data}, Error: ${error}`);
 }

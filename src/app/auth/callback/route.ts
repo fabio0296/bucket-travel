@@ -30,10 +30,10 @@ export async function GET(request: Request){
     console.log(`origin: ${origin}, NEXT: ${next}`);
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`/bucket-list`)
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`/bucket-list`)
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
