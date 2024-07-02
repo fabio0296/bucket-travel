@@ -11,7 +11,7 @@ export default function PlacesList() {
   
   const onPlacesSelect = useCallback(
     (place: google.maps.places.PlaceResult | null) => {
-      console.log('place..', place?.geometry?.location);
+      console.log('place..', place);
       if (dispatch !== null) {
         dispatch({
           type: DISPATCH_ACTIONS.ADD_PLACE,

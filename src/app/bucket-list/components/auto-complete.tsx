@@ -66,7 +66,7 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
 
       const detailRequestOptions = {
         placeId,
-        fields: ['geometry', 'name', 'formatted_address'],
+        fields: ['geometry', 'name', 'formatted_address', 'place_id'],
         sessionToken
       };
 
