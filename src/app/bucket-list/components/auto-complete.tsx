@@ -75,9 +75,9 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
       ) => {
         onPlaceSelect(placeDetails);
         setPredictionResults([]);
-        setInputValue(placeDetails?.formatted_address ?? '');
         setSessionToken(new places.AutocompleteSessionToken());
         setInputValue('');
+        console.log(predictionResults);
       };
 
       placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
@@ -100,7 +100,7 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
                 return (
                   <CommandItem
                     key={place_id}
-                    className=""
+                    className="text-foreground"
                     onMouseDown={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
