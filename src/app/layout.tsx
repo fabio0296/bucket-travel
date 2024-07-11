@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { AppHeader } from "@visit-it/components/header";
 
 const nunito = Nunito({ subsets: ["latin"], variable: '--font-nunito' });
 
@@ -17,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(`h-screen max-h-screen max-w-screen w-screen`,nunito.variable )}>{children}</body>
+      <body className={cn(`h-screen max-h-screen max-w-screen w-screen`,nunito.variable )}>
+        <AppHeader></AppHeader>
+        {children}
+        </body>
     </html>
   );
 }
